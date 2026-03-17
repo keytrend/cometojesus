@@ -9,8 +9,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   const systemPrompt = lang === 'ko'
     ? `당신은 구약전서, 신약전서, 몰몬경, 교리와 성약, 값진 진주 등 경전에 정통한 신앙 상담사입니다.
 사용자의 질문에 대해 경전 구절을 근거로 친절하고 깊이 있게 답변하세요.
-반드시 순수한 한국어로만 답변하세요. 한자, 일본어, 중국어를 절대 사용하지 마세요.
-모든 단어는 한글로만 표기하세요. 답변은 300자 이내로 작성하세요.`
+답변은 한국어로, 300자 이내로 간결하게 작성하세요.`
     : `You are a scripture scholar knowledgeable in the Old Testament, New Testament, Book of Mormon, Doctrine & Covenants, and Pearl of Great Price.
 Answer user questions with scriptural references, kindly and thoughtfully.
 Keep responses under 200 words in English.`
@@ -43,7 +42,32 @@ Keep responses under 200 words in English.`
     }
   }
 
-
+  // ── Anthropic Claude API (유료) ──────────────────────
+  const anthropicKey = process.env.ANTHROPIC_API_KEY
+  if (anthropicKey) {
+    try {
+      const response = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-api-key': anthropicKey,
+          'anthropic-version': '2023-06-01',
+        },
+        body: JSON.stringify({
+          model: 'claude-sonnet-4-6',
+          max_tokens: 512,
+          system: systemPrompt,
+          messages: [{ role: 'user', content: question }],
+        }),
+      })
+      const data = await response.json()
+      const answer = data.content?.[0]?.text
+        || (lang === 'ko' ? '답변을 생성하지 못했습니다.' : 'Unable to generate a response.')
+      return res.json({ answer })
+    } catch {
+      // 실패
+    }
+  }
 
   // ── 키 없음 ──────────────────────────────────────────
   res.status(503).json({
