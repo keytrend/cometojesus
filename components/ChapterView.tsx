@@ -192,17 +192,6 @@ export default function ChapterView({ chapter, lang, bookName, canonName, active
           </div>
         )}
 
-        {/* S6: 원문 말씀 */}
-        {active === 's6' && (
-          <div>
-            <div className="s-label">📜 {lang === 'ko' ? '원문 말씀' : 'Original Text'}</div>
-            <div className="original-text" style={{ whiteSpace: 'pre-line' }}>
-              {chapter.original_text}
-            </div>
-            <div className="info-note">{lang === 'ko' ? '개역개정 4판' : 'Korean Revised Version'}</div>
-          </div>
-        )}
-
         {/* S7: 현대어 번역 */}
         {active === 's7' && (
           <div>
