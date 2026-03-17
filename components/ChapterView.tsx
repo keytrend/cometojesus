@@ -103,29 +103,13 @@ export default function ChapterView({ chapter, lang, bookName, canonName, active
     en: ['Please read again 🙏','Almost there!','Good start!','Nearly perfect!','Perfect! 🎉'],
   }
 
-  // ── 렌더 ─────────────────────────────────────────────
+// ── 렌더 ─────────────────────────────────────────────
   return (
-    <div style={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
-
-      {/* 사이드바 */}
-      <div className="section-sidebar">
-        <div className="section-sidebar-header">
-          {bookName} {chapter.chapter_number}{lang === 'ko' ? '장' : ''}
-        </div>
-        {SECTIONS.map(s => (
-          <button
-            key={s.id}
-            className={`section-btn ${active === s.id ? 'active' : ''} ${s.isQuiz ? 'quiz-btn' : ''}`}
-            onClick={() => { setActive(s.id); if (s.id === 's13') resetQuiz() }}
-          >
-            <span className="s-icon">{s.icon}</span>
-            {lang === 'ko' ? s.ko : s.en}
-          </button>
-        ))}
-      </div>
+    <div style={{ flex: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
 
       {/* 콘텐츠 */}
       <div className="section-content">
+
         {/* 챕터 헤더 */}
         <div className="ch-header">
           <div className="ch-canon-label">{canonName} · {bookName}</div>
@@ -435,7 +419,6 @@ export default function ChapterView({ chapter, lang, bookName, canonName, active
             </div>
           )
         })()}
-      </div>
     </div>
   )
 }
