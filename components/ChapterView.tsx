@@ -419,6 +419,7 @@ export default function ChapterView({ chapter, lang, bookName, canonName, active
             </div>
           )
         })()}
+      </div>
     </div>
   )
 }
