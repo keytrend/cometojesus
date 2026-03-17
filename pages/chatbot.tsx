@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react'
+import { useRouter } from 'next/router'
 import Nav from '../components/Nav'
 import type { Lang } from '../lib/supabase'
 
@@ -11,10 +12,18 @@ const QUICK = {
 
 export default function Chatbot() {
   const [lang, setLang] = useState<Lang>('ko')
+  const router = useRouter()
   const [messages, setMessages] = useState<Message[]>([
     { role: 'ai', text: lang === 'ko' ? '안녕하세요. 오늘은 어떤 말씀에 대해 이야기 나눌까요?' : 'Hello! Which scripture would you like to study today?' }
   ])
   const [input, setInput] = useState('')
+
+  useEffect(() => {
+    const q = router.query.q as string
+    if (q) {
+      send(q)
+    }
+  }, [router.query.q])
   const [loading, setLoading] = useState(false)
   const bottomRef = useRef<HTMLDivElement>(null)
 
