@@ -352,7 +352,7 @@ export default function ChapterView({ chapter, lang, bookName, canonName, active
                         disabled={quizState.answered}
                         onClick={() => pickAnswer(i)}
                       >
-                        {String.fromCharCode(9312 + i)} {opt}
+                        {opt}
                       </button>
                     )
                   })}
