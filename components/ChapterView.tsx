@@ -6,6 +6,8 @@ interface Props {
   lang: Lang
   bookName: string
   canonName: string
+  activeSection?: string
+  onSectionChange?: (id: string) => void
 }
 
 const SECTIONS = [
@@ -25,8 +27,13 @@ const SECTIONS = [
   { id: 's14', icon: '📊', ko: '단원 통합 요약',   en: 'Unit Summary' },
 ]
 
-export default function ChapterView({ chapter, lang, bookName, canonName }: Props) {
-  const [active, setActive]     = useState('s1')
+export default function ChapterView({ chapter, lang, bookName, canonName, activeSection, onSectionChange }: Props) {
+  const [internalActive, setInternalActive] = useState('s1')
+  const active = activeSection ?? internalActive
+  function setActive(id: string) {
+    setInternalActive(id)
+    onSectionChange?.(id)
+  }
   const [revealed, setRevealed] = useState<boolean[]>([false,false,false,false,false])
   const [quizState, setQuizState] = useState<{
     cur: number; answers: boolean[]; answered: boolean; done: boolean
