@@ -19,7 +19,6 @@ const SECTIONS = [
   { id: 's3',  icon: '🗺️', ko: '지리적 배경',     en: 'Geography' },
   { id: 's4',  icon: '📖', ko: '내용 요약',        en: 'Summary' },
   { id: 's5',  icon: '🔑', ko: '핵심 사건',        en: 'Key Events' },
-  { id: 's6',  icon: '📜', ko: '원문 말씀',        en: 'Original' },
   { id: 's7',  icon: '💬', ko: '현대어 번역',      en: 'Translation' },
   { id: 's8',  icon: '✝️', ko: '하나님의 메시지',  en: "God's Message" },
   { id: 's9',  icon: '📅', ko: '역사 메모',        en: 'History' },
