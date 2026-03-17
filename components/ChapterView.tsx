@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useRouter } from 'next/router'
 import type { Chapter, Lang } from '../lib/supabase'
 
 interface Props {
@@ -39,6 +40,7 @@ export default function ChapterView({ chapter, lang, bookName, canonName, active
     cur: number; answers: boolean[]; answered: boolean; done: boolean
   }>({ cur: 0, answers: [], answered: false, done: false })
 
+  const router = useRouter()
   const n = (field: string) => `${field}_${lang}` as keyof Chapter
 
   // ── 빈칸 공개 ─────────────────────────────────────────
@@ -312,7 +314,11 @@ export default function ChapterView({ chapter, lang, bookName, canonName, active
           <div>
             <div className="s-label">🙏 {lang === 'ko' ? '묵상 질문' : 'Reflection Questions'}</div>
             {((chapter[n('meditation_questions')] as string[]) || []).map((q, i) => (
-              <div className="med-q" key={i}>
+              <div
+                className="med-q"
+                key={i}
+                onClick={() => router.push(`/chatbot?q=${encodeURIComponent(q)}`)}
+              >
                 {['①','②','③'][i]} {q}
               </div>
             ))}
