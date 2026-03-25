@@ -48,6 +48,10 @@ export default function ChapterView({ chapter, lang, bookName, canonName, active
   const [isCompleted, setIsCompleted] = useState(false)
   const [marking, setMarking]         = useState(false)
 
+  // ── 북마크 상태 ───────────────────────────────────────
+  const [isBookmarked, setIsBookmarked] = useState(false)
+  const [bookmarking, setBookmarking]   = useState(false)
+
   // ── Groq AI 묵상 답변 ────────────────────────────────
   async function askGroq(question: string) {
     setSelectedQuestion(question)
@@ -119,6 +123,19 @@ export default function ChapterView({ chapter, lang, bookName, canonName, active
       .catch(() => {})
   }, [chapter.id])
 
+  // ── 장 변경 시 북마크 여부 로드 ─────────────────────
+  useEffect(() => {
+    setIsBookmarked(false)
+    const userId = typeof window !== 'undefined'
+      ? (localStorage.getItem('guest_user_id') || 'guest') : 'guest'
+    fetch(`/api/bookmarks?chapter_id=${chapter.id}`, {
+      headers: { 'x-guest-id': userId },
+    })
+      .then(r => r.ok ? r.json() : null)
+      .then(data => { if (data?.bookmarked) setIsBookmarked(true) })
+      .catch(() => {})
+  }, [chapter.id])
+
   async function markComplete() {
     if (isCompleted || marking) return
     setMarking(true)
@@ -136,6 +153,38 @@ export default function ChapterView({ chapter, lang, bookName, canonName, active
       if (res.ok) setIsCompleted(true)
     } catch { /* silent */ } finally {
       setMarking(false)
+    }
+  }
+
+  // ── 북마크 토글 ──────────────────────────────────────
+  async function toggleBookmark() {
+    if (bookmarking) return
+    setBookmarking(true)
+    const userId = typeof window !== 'undefined'
+      ? (localStorage.getItem('guest_user_id') || 'guest') : 'guest'
+    try {
+      if (isBookmarked) {
+        const res = await fetch('/api/bookmarks', {
+          method: 'DELETE',
+          headers: { 'Content-Type': 'application/json', 'x-guest-id': userId },
+          body: JSON.stringify({ chapter_id: chapter.id }),
+        })
+        if (res.ok) setIsBookmarked(false)
+      } else {
+        const res = await fetch('/api/bookmarks', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'x-guest-id': userId },
+          body: JSON.stringify({
+            chapter_id: chapter.id,
+            book_name: bookName,
+            canon_id: canonName,
+            chapter_number: chapter.chapter_number,
+          }),
+        })
+        if (res.ok) setIsBookmarked(true)
+      }
+    } catch { /* silent */ } finally {
+      setBookmarking(false)
     }
   }
 
@@ -242,31 +291,58 @@ export default function ChapterView({ chapter, lang, bookName, canonName, active
             <div className="ch-title">
               {bookName} {chapter.chapter_number}{lang === 'ko' ? '장' : ''}
             </div>
-            <button
-              onClick={markComplete}
-              disabled={isCompleted || marking}
-              style={{
-                flexShrink: 0,
-                background:   isCompleted ? 'var(--gold)' : 'none',
-                border:       '0.5px solid var(--gold)',
-                color:        isCompleted ? '#fff' : 'var(--gold)',
-                padding:      '5px 13px',
-                borderRadius: 'var(--radius-md)',
-                fontSize:     12,
-                fontWeight:   500,
-                fontFamily:   'var(--sans)',
-                cursor:       isCompleted ? 'default' : 'pointer',
-                opacity:      marking ? 0.6 : 1,
-                transition:   'all 0.2s',
-                whiteSpace:   'nowrap',
-              }}
-            >
-              {isCompleted
-                ? '✓ ' + (lang === 'ko' ? '완료됨' : 'Completed')
-                : marking
-                  ? '···'
-                  : (lang === 'ko' ? '학습 완료' : 'Mark Complete')}
-            </button>
+
+            <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+              {/* ☆ 북마크 버튼 */}
+              <button
+                onClick={toggleBookmark}
+                disabled={bookmarking}
+                title={isBookmarked
+                  ? (lang === 'ko' ? '북마크 해제' : 'Remove bookmark')
+                  : (lang === 'ko' ? '북마크 추가' : 'Add bookmark')}
+                style={{
+                  flexShrink: 0,
+                  background: 'none',
+                  border: '0.5px solid var(--border)',
+                  color: isBookmarked ? 'var(--gold)' : 'var(--text-muted)',
+                  padding: '5px 10px',
+                  borderRadius: 'var(--radius-md)',
+                  fontSize: 16,
+                  cursor: bookmarking ? 'default' : 'pointer',
+                  opacity: bookmarking ? 0.5 : 1,
+                  transition: 'all 0.2s',
+                }}
+              >
+                {isBookmarked ? '★' : '☆'}
+              </button>
+
+              {/* 학습 완료 버튼 */}
+              <button
+                onClick={markComplete}
+                disabled={isCompleted || marking}
+                style={{
+                  flexShrink: 0,
+                  background:   isCompleted ? 'var(--gold)' : 'none',
+                  border:       '0.5px solid var(--gold)',
+                  color:        isCompleted ? '#fff' : 'var(--gold)',
+                  padding:      '5px 13px',
+                  borderRadius: 'var(--radius-md)',
+                  fontSize:     12,
+                  fontWeight:   500,
+                  fontFamily:   'var(--sans)',
+                  cursor:       isCompleted ? 'default' : 'pointer',
+                  opacity:      marking ? 0.6 : 1,
+                  transition:   'all 0.2s',
+                  whiteSpace:   'nowrap',
+                }}
+              >
+                {isCompleted
+                  ? '✓ ' + (lang === 'ko' ? '완료됨' : 'Completed')
+                  : marking
+                    ? '···'
+                    : (lang === 'ko' ? '학습 완료' : 'Mark Complete')}
+              </button>
+            </div>
           </div>
         </div>
 
