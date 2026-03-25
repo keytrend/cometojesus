@@ -1,0 +1,21 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:www.churchofjesuschrist.org)",
+      "Bash(python -c \":*)",
+      "Bash(pip install:*)",
+      "Bash(python scrape_scriptures.py)",
+      "Bash(npm run:*)",
+      "Bash(npm install:*)",
+      "Read(//c/Users/goody/**)",
+      "Read(//c/Program Files/nodejs/**)",
+      "Read(//c/Users/goody/AppData/Roaming/**)",
+      "Bash(pkill -f \"next/dist/bin/next\")",
+      "Bash(\"C:/Program Files/nodejs/node.exe\" node_modules/next/dist/bin/next dev)",
+      "Bash(netstat -ano)",
+      "Bash(xargs -I{} taskkill /PID {} /F)",
+      "Bash(powershell -File /tmp/check_columns.ps1)",
+      "Bash(\"C:/Program Files/nodejs/node.exe\" node_modules/next/dist/bin/next build)"
+    ]
+  }
+}
